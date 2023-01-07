@@ -18,7 +18,5 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
 
-  collaboration-tool:
-
 volumes:
   postgres_data:
