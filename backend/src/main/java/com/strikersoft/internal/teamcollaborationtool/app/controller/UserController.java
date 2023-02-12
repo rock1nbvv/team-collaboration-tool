@@ -1,10 +1,13 @@
 package com.strikersoft.internal.teamcollaborationtool.app.controller;
 
-import com.strikersoft.internal.teamcollaborationtool.app.data.request.UserDto;
+import com.strikersoft.internal.teamcollaborationtool.app.data.request.UserCreateDto;
+import com.strikersoft.internal.teamcollaborationtool.app.data.response.ResponseWrapper;
 import com.strikersoft.internal.teamcollaborationtool.app.repository.UserRepository;
+import com.strikersoft.internal.teamcollaborationtool.app.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,28 +18,29 @@ import reactor.core.publisher.Mono;
 /**
  * @author Vlad Baklaiev
  */
-@RequestMapping("/users")
+@RequestMapping("/user")
 @RestController
-@Tag(name = "Users")
+@Tag(name = "User")
 @RequiredArgsConstructor
 public class UserController {
 
+    @Autowired
     private final UserRepository userRepository;
 
-    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Autowired
+    private final UserService userService;
+
+    @PostMapping(value="/vlad", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Create user")
-    public Mono<Void> createOld(@RequestBody UserDto userDto) {
-        return userRepository.create(userDto)
-                .flatMap(count -> {
-                    return Mono.empty();
-                })
-                .then();
+    public Mono<Long> createOld(@RequestBody UserCreateDto userCreateDto) {
+        return userService.create(userCreateDto)
+                .flatMap(Mono::just);
     }
 
-//    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    @Operation(description = "Create user")
-//    public Mono<ResponseWrapper<Long>> create(@RequestBody UserDto userDto) {
-//        return userService.create(userDto);
-//    }
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Create user")
+    public Mono<ResponseWrapper<Long>> create(@RequestBody UserCreateDto userCreateDto) {
+        return userService.create(userCreateDto).map(ResponseWrapper::new);
+    }
 
 }

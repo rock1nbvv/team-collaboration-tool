@@ -1,7 +1,6 @@
 package com.strikersoft.internal.teamcollaborationtool.app.data.request;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 
 /**
@@ -9,9 +8,8 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-@Builder
-public class UserDto {
-    private Long id;
+public class UserUpdateDto {
     private String name;
     private String email;
+    private String password;
 }

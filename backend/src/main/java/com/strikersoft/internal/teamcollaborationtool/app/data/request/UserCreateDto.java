@@ -1,17 +1,15 @@
 package com.strikersoft.internal.teamcollaborationtool.app.data.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * @author Vlad Baklaiev
  */
-@AllArgsConstructor
 @Getter
-@Builder
-public class UserDto {
-    private Long id;
+@NoArgsConstructor
+public class UserCreateDto {
     private String name;
     private String email;
+    private String password;
 }
