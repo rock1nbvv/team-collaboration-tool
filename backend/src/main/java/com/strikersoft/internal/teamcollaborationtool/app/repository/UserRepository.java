@@ -2,7 +2,6 @@ package com.strikersoft.internal.teamcollaborationtool.app.repository;
 
 import com.strikersoft.internal.teamcollaborationtool.app.data.User;
 import com.strikersoft.internal.teamcollaborationtool.app.data.request.UserDto;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.r2dbc.core.DatabaseClient;
@@ -26,10 +25,23 @@ public class UserRepository {
                 .bind("name", user.getName())
                 .bind("email", user.getEmail())
                 .bind("password", user.getPassword())
-                .map((row, rowMetadata) -> {
-                    System.out.println("vlad");
-                    return -1L;
-                })
+                .map((row, rowMetadata) -> (Long) row.get("id"))
                 .one();
+    }
+
+    public Mono<UserDto> getOneById(Long id) {
+        return databaseClient.sql("""
+                        SELECT id, name, email FROM users
+                        WHERE ID=:id
+                        """)
+                .bind("id", id)
+                .map((row, rowMetadata) -> UserDto.builder()
+                        .id((Long) row.get("id"))
+                        .name((String) row.get("name"))
+                        .email((String) row.get("email"))
+                        .build()
+                )
+                .first();
+
     }
 }
