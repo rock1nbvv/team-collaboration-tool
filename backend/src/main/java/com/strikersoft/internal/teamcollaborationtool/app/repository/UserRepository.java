@@ -2,6 +2,7 @@ package com.strikersoft.internal.teamcollaborationtool.app.repository;
 
 import com.strikersoft.internal.teamcollaborationtool.app.data.User;
 import com.strikersoft.internal.teamcollaborationtool.app.data.request.UserDto;
+import com.strikersoft.internal.teamcollaborationtool.app.data.request.UserUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.r2dbc.core.DatabaseClient;
@@ -29,10 +30,10 @@ public class UserRepository {
                 .one();
     }
 
-    public Mono<UserDto> getOneById(Long id) {
+    public Mono<UserDto> getById(Long id) {
         return databaseClient.sql("""
                         SELECT id, name, email FROM users
-                        WHERE ID=:id
+                        WHERE id=:id
                         """)
                 .bind("id", id)
                 .map((row, rowMetadata) -> UserDto.builder()
@@ -42,6 +43,34 @@ public class UserRepository {
                         .build()
                 )
                 .first();
+    }
 
+    public Mono<UserDto> updateById(Long id, UserUpdateDto userUpdateDto) {
+        return databaseClient.sql("""
+                        UPDATE users
+                        SET name=:name, email=:email, password=:password
+                        WHERE id=:id
+                        """)
+                .bind("id", id)
+                .bind("name", userUpdateDto.getName())
+                .bind("email", userUpdateDto.getEmail())
+                .bind("password", userUpdateDto.getPassword())
+                .map((row, rowMetadata) -> UserDto.builder()
+                        .id((Long) row.get("id"))
+                        .name((String) row.get("name"))
+                        .email((String) row.get("email"))
+                        .build()
+                )
+                .first();
+    }
+
+    public Mono<Integer> deleteById(Long id) {
+        return databaseClient.sql("""
+                        DELETE FROM users
+                        WHERE id=:id
+                        """)
+                .bind("id", id)
+                .fetch()
+                .rowsUpdated();
     }
 }

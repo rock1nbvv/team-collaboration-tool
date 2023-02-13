@@ -3,6 +3,7 @@ package com.strikersoft.internal.teamcollaborationtool.app.service;
 import com.strikersoft.internal.teamcollaborationtool.app.data.User;
 import com.strikersoft.internal.teamcollaborationtool.app.data.request.UserCreateDto;
 import com.strikersoft.internal.teamcollaborationtool.app.data.request.UserDto;
+import com.strikersoft.internal.teamcollaborationtool.app.data.request.UserUpdateDto;
 import com.strikersoft.internal.teamcollaborationtool.app.exception.NotFoundException;
 import com.strikersoft.internal.teamcollaborationtool.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,25 @@ public class UserService {
         return userRepository.create(user);
     }
 
-    public Mono<UserDto> getOneById(Long id) {
-        return userRepository.getOneById(id)
-                .switchIfEmpty(Mono.error(()-> new NotFoundException("Entity " + User.class + " not found by id - " + id,
+    public Mono<UserDto> getById(Long id) {
+        return userRepository.getById(id)
+                .switchIfEmpty(Mono.error(() -> new NotFoundException("Entity " + User.class + " not found by id - " + id,
                         User.class,
                         id)));
+    }
+
+    public Mono<UserDto> updateById(Long id, UserUpdateDto userUpdateDto) {
+        return userRepository.updateById(id, userUpdateDto)
+                .switchIfEmpty(Mono.error(() -> new NotFoundException("Entity " + User.class + " not found by id - " + id,
+                        User.class,
+                        id)));
+    }
+
+    public Mono<Void> deleteById(Long id) {
+        return userRepository.deleteById(id)
+                .switchIfEmpty(Mono.error(() -> new NotFoundException("Entity " + User.class + " not found by id - " + id,
+                        User.class,
+                        id)))
+                .then();
     }
 }
