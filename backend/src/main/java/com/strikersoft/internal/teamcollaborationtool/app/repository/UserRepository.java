@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Repository
 public class UserRepository {
-    @Autowired
+
     private final DatabaseClient databaseClient;
 
     public Mono<Long> create(User user) {
@@ -64,7 +64,7 @@ public class UserRepository {
                 .first();
     }
 
-    public Mono<Integer> deleteById(Long id) {
+    public Mono<Long> deleteById(Long id) {
         return databaseClient.sql("""
                         DELETE FROM users
                         WHERE id=:id

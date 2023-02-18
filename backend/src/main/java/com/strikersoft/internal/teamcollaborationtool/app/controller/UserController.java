@@ -37,6 +37,12 @@ public class UserController {
         return userService.create(userCreateDto).map(ResponseWrapper::new);
     }
 
+    @PostMapping(value = "/duplicate", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Create user duplicate")
+    public Mono<ResponseWrapper<Long>> createDuplicate(@RequestBody UserCreateDto userCreateDto) {
+        return userService.createDuplicate(userCreateDto).map(ResponseWrapper::new);
+    }
+
     @GetMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get user")
     public Mono<ResponseWrapper<UserDto>> getById(@PathVariable Long userId) {

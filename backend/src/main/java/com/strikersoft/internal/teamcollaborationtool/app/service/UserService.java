@@ -6,8 +6,10 @@ import com.strikersoft.internal.teamcollaborationtool.app.data.request.UserDto;
 import com.strikersoft.internal.teamcollaborationtool.app.data.request.UserUpdateDto;
 import com.strikersoft.internal.teamcollaborationtool.app.exception.NotFoundException;
 import com.strikersoft.internal.teamcollaborationtool.app.repository.UserRepository;
+import io.r2dbc.spi.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 /**
@@ -15,6 +17,9 @@ import reactor.core.publisher.Mono;
  */
 @Service
 public class UserService {
+
+//    @Autowired
+//    ConnectionFactory connectionFactory;
 
     @Autowired
     private UserRepository userRepository;
@@ -26,6 +31,16 @@ public class UserService {
                 .password(userCreateDto.getPassword())
                 .build();
         return userRepository.create(user);
+    }
+
+    @Transactional
+    public Mono<Long> createDuplicate(UserCreateDto userCreateDto) {
+        User user = User.builder()
+                .name(userCreateDto.getName())
+                .email(userCreateDto.getEmail())
+                .password(userCreateDto.getPassword())
+                .build();
+        return userRepository.create(user).then(userRepository.create(user));
     }
 
     public Mono<UserDto> getById(Long id) {
