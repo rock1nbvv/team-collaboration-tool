@@ -19,7 +19,7 @@ public class UserRepository {
     private final DatabaseClient databaseClient;
 
     public Mono<Long> create(User user) {
-        return databaseClient.sql("""
+        Mono<Long> one = databaseClient.sql("""
                         INSERT INTO users (name, email, password) VALUES (:name, :email, :password)
                         """)
                 .filter(statement -> statement.returnGeneratedValues("id"))
@@ -28,6 +28,7 @@ public class UserRepository {
                 .bind("password", user.getPassword())
                 .map((row, rowMetadata) -> (Long) row.get("id"))
                 .one();
+        return one;
     }
 
     public Mono<UserDto> getById(Long id) {

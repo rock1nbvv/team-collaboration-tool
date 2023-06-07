@@ -6,8 +6,8 @@ import com.strikersoft.internal.teamcollaborationtool.app.data.request.UserDto;
 import com.strikersoft.internal.teamcollaborationtool.app.data.request.UserUpdateDto;
 import com.strikersoft.internal.teamcollaborationtool.app.exception.NotFoundException;
 import com.strikersoft.internal.teamcollaborationtool.app.repository.UserRepository;
-import io.r2dbc.spi.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
@@ -17,9 +17,6 @@ import reactor.core.publisher.Mono;
  */
 @Service
 public class UserService {
-
-//    @Autowired
-//    ConnectionFactory connectionFactory;
 
     @Autowired
     private UserRepository userRepository;
@@ -40,7 +37,10 @@ public class UserService {
                 .email(userCreateDto.getEmail())
                 .password(userCreateDto.getPassword())
                 .build();
-        return userRepository.create(user).then(userRepository.create(user));
+        return userRepository.create(user)
+                .then(userRepository.create(user)//todo handle database constraint exceptions look into tetra-backend - constraintMap
+                        .onErrorMap(DuplicateKeyException.class, ex -> new NotFoundException("vlad impaled you", User.class, -1))
+                );
     }
 
     public Mono<UserDto> getById(Long id) {
